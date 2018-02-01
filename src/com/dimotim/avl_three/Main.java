@@ -8,8 +8,8 @@ import java.util.Random;
 
 public class Main {
     public static void main(String[] args) {
-        //while (true)testInsertAndFindAndDelete();
-        while (true)testInsertAndFindAndAVL();
+        for(int i=0;i<100;i++)testInsertAndFindAndDelete();
+        for(int i=0;i<100;i++)testInsertAndFindAndAVL();
     }
 
     public static void testInsertAndFindAndAVL(){
@@ -46,8 +46,8 @@ public class Main {
     public static void testInsertAndFindAndDelete(){
         AVLTree<Integer, Integer> tree=new AVLTree<>();
         Random random=new Random();
-        final int size=1000;
-        final int bound=2000;
+        final int size=10;
+        final int bound=20;
         int[] numbers=new int[size];
         boolean[] used=new boolean[bound];
 
