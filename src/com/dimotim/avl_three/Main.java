@@ -48,7 +48,7 @@ class AVLTree<Key extends Comparable<Key>, Value> {
     public void insert(Key key, Value value){
         if(root==null)root=new Node<>(key, value);
         else root.insert(key, value);
-        //if(root!=null)root.heightTest();
+        if(root!=null)root.heightTest();
     }
 
     public Value find(Key key){
@@ -59,7 +59,7 @@ class AVLTree<Key extends Comparable<Key>, Value> {
     public void delete(Key key){
         if(root==null)throw new IllegalStateException("tree is empty!");
         else root=root.delete(key);
-        //if(root!=null)root.heightTest();
+        if(root!=null)root.heightTest();
     }
 
     static class Node<Key extends Comparable<Key>, Value> {

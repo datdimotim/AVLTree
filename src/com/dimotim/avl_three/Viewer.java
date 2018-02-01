@@ -23,7 +23,7 @@ public class Viewer extends JFrame{
         setVisible(true);
     }
 
-    void setListeners(){
+    private void setListeners(){
         addButton.addActionListener(e -> {
             tree.insert(Integer.parseInt(textField.getText()),null);
             treeViewPanel.updateTree();

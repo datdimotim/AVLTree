@@ -29,7 +29,7 @@ public class TreeViewPanel extends JPanel {
 
     private void paintTree(Graphics g, AVLTree.Node<Integer,Void> root, Point current, int interval){
         if(root==null)return;
-        paintNode(g,current,root.key);
+        paintNode(g,current,root.key+" "+root.height);
         if(root.left!=null){
             Point leftCenter=paintLeft(g,current,interval);
             paintTree(g,root.left,leftCenter,interval/2);
@@ -40,10 +40,10 @@ public class TreeViewPanel extends JPanel {
         }
     }
 
-    private void paintNode(Graphics g, Point center, int val){
+    private void paintNode(Graphics g, Point center, String val){
         Point rightUpCorner=new Point(center.x-sizeOfNode/2,center.y-sizeOfNode/2);
         g.drawRect(rightUpCorner.x,rightUpCorner.y,sizeOfNode,sizeOfNode);
-        g.drawString(""+val,rightUpCorner.x+7,rightUpCorner.y+20);
+        g.drawString(val,rightUpCorner.x+7,rightUpCorner.y+20);
     }
 
     private Point paintLeft(Graphics g, Point center, int interval){
