@@ -8,9 +8,41 @@ import java.util.Random;
 
 public class Main {
     public static void main(String[] args) {
-        while (true)testInsertAndFindAndDelete();
+        //while (true)testInsertAndFindAndDelete();
+        while (true)testInsertAndFindAndAVL();
     }
 
+    public static void testInsertAndFindAndAVL(){
+        AVLTree<Integer, Integer> tree=new AVLTree<>();
+        Random random=new Random();
+        final int size=1000;
+        final int bound=2000;
+        int[] numbers=new int[size];
+        boolean[] used=new boolean[bound];
+
+        List<Integer> testSet=new ArrayList<>();
+
+        for(int i=0;i<size;i++){
+            int k;
+            while (used[(k=random.nextInt(bound))]);
+            testSet.add(k);
+            used[k]=true;
+            numbers[i]=k;
+            tree.insert(k,0);
+        }
+
+        for(int i=0; i<size; i++){
+            try {
+                if(null==tree.find(numbers[i]))throw new RuntimeException();
+            }
+            catch (RuntimeException e){
+                new Viewer(tree);
+                System.out.println("find="+numbers[i]);
+                System.out.println(testSet);
+                throw new RuntimeException(e);
+            }
+        }
+    }
     public static void testInsertAndFindAndDelete(){
         AVLTree<Integer, Integer> tree=new AVLTree<>();
         Random random=new Random();
@@ -24,7 +56,6 @@ public class Main {
         for(int i=0;i<size;i++){
             int k;
             while (used[(k=random.nextInt(bound))]);
-            //System.out.println(k);
             testSet.add(k);
             used[k]=true;
             numbers[i]=k;
@@ -58,8 +89,11 @@ class AVLTree<Key extends Comparable<Key>, Value> {
 
     public void insert(Key key, Value value){
         if(root==null)root=new Node<>(key, value);
-        else root.insert(key, value);
-        if(root!=null)root.heightTest();
+        else root=root.insert(key, value);
+        if(root!=null){
+            root.heightTest();
+            root.testAVL();
+        }
     }
 
     public Value find(Key key){
@@ -115,6 +149,12 @@ class AVLTree<Key extends Comparable<Key>, Value> {
             return 1+Math.max(left.testHeight(),right.testHeight());
         }
 
+        void testAVL(){
+            if(left!=null)left.testAVL();
+            if(right!=null)right.testAVL();
+            if(Math.abs(leftHeight()-rightHeight())>1)throw new RuntimeException();
+        }
+
         boolean isList(){
             return left==null && right==null;
         }
@@ -124,14 +164,18 @@ class AVLTree<Key extends Comparable<Key>, Value> {
             Node<Key, Value> middle=newRoot.left;
             right=middle;
             newRoot.left=this;
+            updateHeight();
+            newRoot.updateHeight();
             return newRoot;
         }
 
-        Node<Key, Value> rotareR(){
+        Node<Key, Value> rotateR(){
             Node<Key, Value> newRoot=left;
             Node<Key, Value> middle=newRoot.right;
             left=middle;
             newRoot.right=this;
+            updateHeight();
+            newRoot.updateHeight();
             return newRoot;
         }
 
@@ -181,20 +225,56 @@ class AVLTree<Key extends Comparable<Key>, Value> {
             }
         }
 
-        void insert(Key key, @NotNull Value value){
+        static Node normalize(Node root){
+            if(root.leftHeight()-root.leftHeight()>1){
+                if(root.left.rightHeight()>root.left.leftHeight()){
+                    root.left=root.left.rotateL();
+                    return root.rotateR();
+                }
+                else return root.rotateR();
+            }
+            if(root.rightHeight()-root.leftHeight()>1){
+                if(root.right.leftHeight()>root.right.rightHeight()){
+                    root.right=root.right.rotateR();
+                    return root.rotateL();
+                }
+                else return root.rotateL();
+            }
+            root.updateHeight();
+            return root;
+        }
+
+        Node<Key,Value> insert(Key key, @NotNull Value value){
             if(this.key.compareTo(key)==0){
                 this.key=key;
-                return;
+                return this;
             }
             if(this.key.compareTo(key)>0) {
-                if (left == null) left = new Node<>(key, value);
-                else left.insert(key, value);
-                updateHeight();
+                if (left == null){
+                    left = new Node<>(key, value);
+                    return normalize(this);
+                }
+                else {
+                    left=left.insert(key, value);
+                    if(leftHeight()-rightHeight()>1){
+                        if(left.rightHeight()>left.leftHeight()){
+                            left=left.rotateL();
+                            return rotateR();
+                        }
+                        else return rotateR();
+                    }
+                    else {
+                        return normalize(this);
+                    }
+                }
             }
             else {
-                if(right==null)right=new Node<>(key,value);
-                else right.insert(key, value);
-                updateHeight();
+                if(right==null){
+                    right=new Node<>(key,value);
+                    return normalize(this);
+                }
+                else right=right.insert(key, value);
+                return normalize(this);
             }
         }
 
