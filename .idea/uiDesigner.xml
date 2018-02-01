@@ -120,5 +120,10 @@
         <default-constraints vsize-policy="6" hsize-policy="0" anchor="0" fill="2" />
       </item>
     </group>
+    <group name="dim">
+      <item class="com.dimotim.avl_three.TreeViewPanel" icon="/com/intellij/uiDesigner/icons/panel.png" removable="true" auto-create-binding="true" can-attach-label="false" is-container="true">
+        <default-constraints vsize-policy="7" hsize-policy="7" anchor="0" fill="3" />
+      </item>
+    </group>
   </component>
 </project>

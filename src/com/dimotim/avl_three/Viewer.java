@@ -4,9 +4,10 @@ import javax.swing.*;
 
 public class Viewer extends JFrame{
     private JPanel mainPanel;
-    private JTextField textField1;
+    private JTextField textField;
     private JButton addButton;
     private JButton deleteButton;
+    private TreeViewPanel treeViewPanel;
 
     public static void main(String[] args) {
         new Viewer();
@@ -19,3 +20,4 @@ public class Viewer extends JFrame{
         setVisible(true);
     }
 }
+

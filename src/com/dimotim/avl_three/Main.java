@@ -43,7 +43,7 @@ public class Main {
 }
 
 class AVLTree<Key extends Comparable<Key>, Value> {
-    private Node<Key, Value> root;
+    Node<Key, Value> root;
 
     public void insert(Key key, Value value){
         if(root==null)root=new Node<>(key, value);
@@ -62,7 +62,7 @@ class AVLTree<Key extends Comparable<Key>, Value> {
         //if(root!=null)root.heightTest();
     }
 
-    private static class Node<Key extends Comparable<Key>, Value> {
+    static class Node<Key extends Comparable<Key>, Value> {
         int height;
         Key key;
         Value value;
