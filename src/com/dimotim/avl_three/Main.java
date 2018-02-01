@@ -6,7 +6,7 @@ import java.util.Random;
 
 public class Main {
     public static void main(String[] args) {
-        while (true)testInsertAndFindAndDelete();
+        testInsertAndFindAndDelete();
     }
 
     public static void testInsertAndFindAndDelete(){
@@ -15,13 +15,16 @@ public class Main {
         final int size=1000;
         final int bound=2000;
         int[] numbers=new int[size];
+        boolean[] used=new boolean[bound];
 
-        int state=0;
 
         for(int i=0;i<size;i++){
-            state+=random.nextInt(bound)+1;
-            numbers[i]=state;
-            tree.insert(state,0);
+            int k;
+            while (!used[(k=random.nextInt(bound))]){
+                used[k]=true;
+                numbers[i]=k;
+                tree.insert(k,0);
+            }
         }
 
         for(int i=0; i<size; i++){
@@ -45,6 +48,7 @@ class AVLTree<Key extends Comparable<Key>, Value> {
     public void insert(Key key, Value value){
         if(root==null)root=new Node<>(key, value);
         else root.insert(key, value);
+        //if(root!=null)root.heightTest();
     }
 
     public Value find(Key key){
@@ -55,10 +59,11 @@ class AVLTree<Key extends Comparable<Key>, Value> {
     public void delete(Key key){
         if(root==null)throw new IllegalStateException("tree is empty!");
         else root=root.delete(key);
+        //if(root!=null)root.heightTest();
     }
 
     private static class Node<Key extends Comparable<Key>, Value> {
-        int balance;
+        int height;
         Key key;
         Value value;
         Node<Key, Value> left;
@@ -69,7 +74,34 @@ class AVLTree<Key extends Comparable<Key>, Value> {
             this.value=value;
             left=null;
             right=null;
-            balance=0;
+            height=1;
+        }
+
+        int rightHeight(){
+            if(right==null)return 0;
+            else return right.height;
+        }
+
+        int leftHeight(){
+            if(left==null)return 0;
+            else return left.height;
+        }
+
+        void updateHeight(){
+            height = 1+Math.max(leftHeight(),rightHeight());
+        }
+
+        void heightTest(){
+            if(height!=testHeight())throw new RuntimeException();
+            if(left!=null)left.heightTest();
+            if(right!=null)right.heightTest();
+        }
+
+        int testHeight(){
+            if(isList())return 1;
+            if(left==null)return 1+right.testHeight();
+            if(right==null)return 1+left.testHeight();
+            return 1+Math.max(left.testHeight(),right.testHeight());
         }
 
         boolean isList(){
@@ -103,6 +135,7 @@ class AVLTree<Key extends Comparable<Key>, Value> {
                 if(left==null)return right;
                 if(left.right==null){
                     left.right=right;
+                    left.updateHeight();
                     return left;
                 }
                 @NotNull Node<Key, Value> closestLPred=left.closestL(this);
@@ -111,30 +144,36 @@ class AVLTree<Key extends Comparable<Key>, Value> {
                 closestL.left=left;
                 closestL.right=right;
                 closestLPred.right=closestsTree;
+                closestLPred.updateHeight();
+                closestL.updateHeight();
                 return closestL;
             }
             if(this.key.compareTo(key)<0){
                 if(left!=null)left=left.delete(key);
+                updateHeight();
                 return this;
             }
             else {
                 if (right != null) right = right.delete(key);
+                updateHeight();
                 return this;
             }
         }
 
         void insert(Key key, @NotNull Value value){
             if(this.key.compareTo(key)==0){
-                this.key =key;
+                this.key=key;
                 return;
             }
             if(this.key.compareTo(key)<0) {
                 if (left == null) left = new Node<>(key, value);
                 else left.insert(key, value);
+                updateHeight();
             }
             else {
                 if(right==null)right=new Node<>(key,value);
                 else right.insert(key, value);
+                updateHeight();
             }
         }
 
