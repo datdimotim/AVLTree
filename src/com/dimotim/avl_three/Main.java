@@ -148,7 +148,7 @@ class AVLTree<Key extends Comparable<Key>, Value> {
                 closestL.updateHeight();
                 return closestL;
             }
-            if(this.key.compareTo(key)<0){
+            if(this.key.compareTo(key)>0){
                 if(left!=null)left=left.delete(key);
                 updateHeight();
                 return this;
@@ -165,7 +165,7 @@ class AVLTree<Key extends Comparable<Key>, Value> {
                 this.key=key;
                 return;
             }
-            if(this.key.compareTo(key)<0) {
+            if(this.key.compareTo(key)>0) {
                 if (left == null) left = new Node<>(key, value);
                 else left.insert(key, value);
                 updateHeight();
@@ -179,7 +179,7 @@ class AVLTree<Key extends Comparable<Key>, Value> {
 
         Value find(Key key){
             if(this.key.compareTo(key)==0)return value;
-            if(this.key.compareTo(key)<0){
+            if(this.key.compareTo(key)>0){
                 if(left==null)return null;
                 else return left.find(key);
             }

@@ -20,6 +20,7 @@ public class TreeViewPanel extends JPanel {
     @Override
     public void paint(Graphics g) {
         Rectangle bounds=g.getClipBounds();
+        g.clearRect(bounds.x,bounds.y,bounds.width,bounds.height);
         Point center=new Point((bounds.x+bounds.width)/2,(bounds.y+bounds.height)/2);
         Point root=new Point(center.x,sizeOfNode);
         g.translate(root.x,root.y);
