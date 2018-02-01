@@ -8,15 +8,15 @@ import java.util.Random;
 
 public class Main {
     public static void main(String[] args) {
-        for(int i=0;i<100;i++)testInsertAndFindAndDelete();
-        for(int i=0;i<100;i++)testInsertAndFindAndAVL();
+        for(int i=0;i<100000;i++)testInsertAndFindAndDelete();
+        for(int i=0;i<100000;i++)testInsertAndFindAndAVL();
     }
 
     public static void testInsertAndFindAndAVL(){
         AVLTree<Integer, Integer> tree=new AVLTree<>();
         Random random=new Random();
-        final int size=1000;
-        final int bound=2000;
+        final int size=32;
+        final int bound=64;
         int[] numbers=new int[size];
         boolean[] used=new boolean[bound];
 
@@ -46,8 +46,8 @@ public class Main {
     public static void testInsertAndFindAndDelete(){
         AVLTree<Integer, Integer> tree=new AVLTree<>();
         Random random=new Random();
-        final int size=10;
-        final int bound=20;
+        final int size=32;
+        final int bound=64;
         int[] numbers=new int[size];
         boolean[] used=new boolean[bound];
 
@@ -104,7 +104,10 @@ class AVLTree<Key extends Comparable<Key>, Value> {
     public void delete(Key key){
         if(root==null)throw new IllegalStateException("tree is empty!");
         else root=root.delete(key);
-        if(root!=null)root.heightTest();
+        if(root!=null){
+            root.heightTest();
+            root.testAVL();
+        }
     }
 
     static class Node<Key extends Comparable<Key>, Value> {
@@ -179,25 +182,19 @@ class AVLTree<Key extends Comparable<Key>, Value> {
             return newRoot;
         }
 
-        @NotNull Node<Key, Value> closestL(Node<Key, Value> pred, Node<Key, Value> root){
-            if(right==null){
-                deleteClosestLHelper(pred,root);
-                return this;
+        static Node[] deleteClosest(Node left){
+            if(left.right.right==null){
+                Node closest=left.right;
+                left.right=closest.left;
+                return new Node[]{closest,normalize(left)};
             }
-            else {
-                Node<Key,Value> res=right.closestL(this,root);
-                updateHeight();
-                return res;
+            else{
+                Node[] ret=deleteClosest(left.right);
+                Node closest=ret[0];
+                Node newRight=ret[1];
+                left.right=newRight;
+                return new Node[]{closest,normalize(left)};
             }
-        }
-
-        static void deleteClosestLHelper(Node predClosest, Node root){
-            Node closestL=predClosest.right;
-            Node closestsTree=closestL.left;
-            closestL.left=root.left;
-            closestL.right=root.right;
-            predClosest.right=closestsTree;
-            predClosest.updateHeight();
         }
 
         Node<Key, Value> delete(Key key){
@@ -206,27 +203,27 @@ class AVLTree<Key extends Comparable<Key>, Value> {
                 if(left==null)return right;
                 if(left.right==null){
                     left.right=right;
-                    left.updateHeight();
-                    return left;
+                    return normalize(left);
                 }
-                Node<Key,Value> newRoot=left.closestL(this,this);
-                newRoot.updateHeight();
-                return newRoot;
+                Node[] ret=deleteClosest(left);
+                Node newRoot=ret[0];
+                Node newLeft=ret[1];
+                newRoot.left=newLeft;
+                newRoot.right=right;
+                return normalize(newRoot);
             }
             if(this.key.compareTo(key)>0){
                 if(left!=null)left=left.delete(key);
-                updateHeight();
-                return this;
+                return normalize(this);
             }
             else {
                 if (right != null) right = right.delete(key);
-                updateHeight();
-                return this;
+                return normalize(this);
             }
         }
 
         static Node normalize(Node root){
-            if(root.leftHeight()-root.leftHeight()>1){
+            if(root.leftHeight()-root.rightHeight()>1){
                 if(root.left.rightHeight()>root.left.leftHeight()){
                     root.left=root.left.rotateL();
                     return root.rotateR();
@@ -291,4 +288,3 @@ class AVLTree<Key extends Comparable<Key>, Value> {
         }
     }
 }
-

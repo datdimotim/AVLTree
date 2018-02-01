@@ -33,11 +33,14 @@ public class Viewer extends JFrame{
         addButton.addActionListener(e -> {
             tree.insert(Integer.parseInt(textField.getText()),null);
             treeViewPanel.updateTree();
+            textField.setText("");
+            textField.grabFocus();
         });
         deleteButton.addActionListener(e -> {
             tree.delete(Integer.parseInt(textField.getText()));
             treeViewPanel.updateTree();
+            textField.setText("");
+            textField.grabFocus();
         });
     }
 }
-
