@@ -2,11 +2,13 @@ package com.dimotim.avl_three;
 
 import com.sun.istack.internal.NotNull;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 public class Main {
     public static void main(String[] args) {
-        testInsertAndFindAndDelete();
+        while (true)testInsertAndFindAndDelete();
     }
 
     public static void testInsertAndFindAndDelete(){
@@ -17,14 +19,16 @@ public class Main {
         int[] numbers=new int[size];
         boolean[] used=new boolean[bound];
 
+        List<Integer> testSet=new ArrayList<>();
 
         for(int i=0;i<size;i++){
             int k;
-            while (!used[(k=random.nextInt(bound))]){
-                used[k]=true;
-                numbers[i]=k;
-                tree.insert(k,0);
-            }
+            while (used[(k=random.nextInt(bound))]);
+            //System.out.println(k);
+            testSet.add(k);
+            used[k]=true;
+            numbers[i]=k;
+            tree.insert(k,0);
         }
 
         for(int i=0; i<size; i++){
@@ -32,7 +36,14 @@ public class Main {
         }
 
         for(int i=0;i<size; i++){
-            if(i%2==0)tree.delete(numbers[i]);
+            try {
+                if(i%2==0)tree.delete(numbers[i]);
+            }
+            catch (RuntimeException e){
+                new Viewer(tree);
+                System.out.println(testSet);
+                throw new RuntimeException(e);
+            }
         }
 
         for(int i=0;i<size; i++){
@@ -124,9 +135,25 @@ class AVLTree<Key extends Comparable<Key>, Value> {
             return newRoot;
         }
 
-        @NotNull Node<Key, Value> closestL(Node<Key, Value> pred){
-            if(right==null)return pred;
-            else return right.closestL(this);
+        @NotNull Node<Key, Value> closestL(Node<Key, Value> pred, Node<Key, Value> root){
+            if(right==null){
+                deleteClosestLHelper(pred,root);
+                return this;
+            }
+            else {
+                Node<Key,Value> res=right.closestL(this,root);
+                updateHeight();
+                return res;
+            }
+        }
+
+        static void deleteClosestLHelper(Node predClosest, Node root){
+            Node closestL=predClosest.right;
+            Node closestsTree=closestL.left;
+            closestL.left=root.left;
+            closestL.right=root.right;
+            predClosest.right=closestsTree;
+            predClosest.updateHeight();
         }
 
         Node<Key, Value> delete(Key key){
@@ -138,15 +165,9 @@ class AVLTree<Key extends Comparable<Key>, Value> {
                     left.updateHeight();
                     return left;
                 }
-                @NotNull Node<Key, Value> closestLPred=left.closestL(this);
-                Node<Key, Value> closestL=closestLPred.right;
-                Node<Key, Value> closestsTree=closestL.left;
-                closestL.left=left;
-                closestL.right=right;
-                closestLPred.right=closestsTree;
-                closestLPred.updateHeight();
-                closestL.updateHeight();
-                return closestL;
+                Node<Key,Value> newRoot=left.closestL(this,this);
+                newRoot.updateHeight();
+                return newRoot;
             }
             if(this.key.compareTo(key)>0){
                 if(left!=null)left=left.delete(key);

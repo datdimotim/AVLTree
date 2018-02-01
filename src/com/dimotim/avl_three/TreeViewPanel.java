@@ -4,11 +4,11 @@ import javax.swing.*;
 import java.awt.*;
 
 public class TreeViewPanel extends JPanel {
-    private AVLTree<Integer,Void> tree=new AVLTree<>();
+    private AVLTree<Integer,?> tree=new AVLTree<>();
     private final int sizeOfNode=30;
     private final int verticalOffset=20;
 
-    public void setTree(AVLTree<Integer, Void> tree){
+    public void setTree(AVLTree<Integer, ?> tree){
         this.tree=tree;
         updateTree();
     }
@@ -27,7 +27,7 @@ public class TreeViewPanel extends JPanel {
         paintTree(g,tree.root,new Point(0,0),center.x/2);
     }
 
-    private void paintTree(Graphics g, AVLTree.Node<Integer,Void> root, Point current, int interval){
+    private void paintTree(Graphics g, AVLTree.Node<Integer,?> root, Point current, int interval){
         if(root==null)return;
         paintNode(g,current,root.key+" "+root.height);
         if(root.left!=null){
