@@ -16,8 +16,7 @@ public class AVLTree<Key extends Comparable<Key>, Value> {
     }
 
     public void delete(Key key){
-        if(root==null)throw new IllegalStateException("tree is empty!");
-        else root=root.delete(key);
+        if (root != null) root=root.delete(key);
     }
 
     static class Node<Key extends Comparable<Key>, Value> {

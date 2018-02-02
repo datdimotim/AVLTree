@@ -1,13 +1,12 @@
 package com.dimotim.avl_three;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 public class Main {
     public static void main(String[] args) {
-        for(int i=0;i<100000;i++)testInsertAndFindAndDelete();
-        for(int i=0;i<100000;i++)testInsertAndFindAndAVL();
+        //for(int i=0;i<100000;i++)testInsertAndFindAndDelete();
+        //for(int i=0;i<100000;i++)testInsertAndFindAndAVL();
+        while (true)benchmark();
     }
 
     public static void testInsertAndFindAndAVL(){
@@ -53,6 +52,8 @@ public class Main {
         List<Integer> testSet=new ArrayList<>();
 
         for(int i=0;i<size;i++){
+            try{
+
             int k;
             while (used[(k=random.nextInt(bound))]);
             testSet.add(k);
@@ -60,6 +61,12 @@ public class Main {
             numbers[i]=k;
             tree.insert(k,0);
             NodeTestsUtills.testTree(tree.root);
+            }
+            catch (RuntimeException e){
+                System.out.println(testSet);
+                new Viewer(tree);
+                throw new RuntimeException(e);
+            }
         }
 
         for(int i=0; i<size; i++){
@@ -82,6 +89,41 @@ public class Main {
             if(i%2==0)if(null!=tree.find(numbers[i]))throw new RuntimeException();
             if(i%2==1)if(null==tree.find(numbers[i])) throw new RuntimeException();
         }
+    }
+
+    public static void benchmark(){
+        Random random=new Random();
+        final int size=1000000;
+        final int bound=2*size;
+        int[] numbers=new int[size];
+        for(int i=0;i<size;i++)numbers[i]=random.nextInt(bound);
+
+        AVLTree<Integer, Integer> avl=new AVLTree<>();
+        final long startInsertAVL=System.currentTimeMillis();
+        for (int n:numbers)avl.insert(n,n);
+        System.out.print("insert to avl/tm: "+(System.currentTimeMillis()-startInsertAVL));
+
+        final long startInsertTM=System.currentTimeMillis();
+        Map<Integer, Integer> tm=new TreeMap<>();
+        for (int n:numbers)tm.put(n,n);
+        System.out.println("\t"+(System.currentTimeMillis()-startInsertTM));
+
+        final long startFindAVL=System.currentTimeMillis();
+        for (int n:numbers)if(!avl.find(n).equals(n))throw new RuntimeException();
+        System.out.print("find in avl/tm  : "+(System.currentTimeMillis()-startFindAVL));
+
+        final long startFindTM=System.currentTimeMillis();
+        for (int n:numbers)if(!tm.get(n).equals(n))throw new RuntimeException();
+        System.out.println("\t"+(System.currentTimeMillis()-startFindTM));
+
+        final long startDelAVL=System.currentTimeMillis();
+        for (int n:numbers)avl.delete(n);
+        System.out.print("remove in avl/tm: "+(System.currentTimeMillis()-startDelAVL));
+
+        final long startDelTM=System.currentTimeMillis();
+        for (int n:numbers)tm.remove(n);
+        System.out.println("\t"+(System.currentTimeMillis()-startDelTM));
+        System.out.println();
     }
 }
 
